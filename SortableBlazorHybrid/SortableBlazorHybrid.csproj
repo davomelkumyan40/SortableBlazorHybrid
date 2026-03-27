@@ -1,15 +1,35 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-	<PackageId>SortableBlazorHybrid</PackageId>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IsPackable>true</IsPackable>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>SortableBlazorHybrid</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>David Melkumyan</Authors>
+    <Description>A powerful drag-and-drop sorting component library for Blazor Hybrid (MAUI) and Blazor WebAssembly applications. Built on Sortable.js with support for multi-zone dragging, nested containers, touch events, and extensive customization options.</Description>
+    <Summary>Drag-and-drop sorting for Blazor Hybrid and WASM applications</Summary>
+    <PackageTags>blazor;drag-drop;sortable;ui;maui;hybrid;webassembly;wasm;interactive</PackageTags>
+    <RepositoryUrl>https://github.com/davomelkumyan40/SortableBlazorHybrid</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageProjectUrl>https://github.com/davomelkumyan40/SortableBlazorHybrid</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
 
   <ItemGroup>
-    <SupportedPlatform Include="browser" />
+    <Content Include="wwwroot\**" Pack="true" PackagePath="wwwroot" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
