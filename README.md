@@ -68,8 +68,6 @@ Add the following script references to your **`index.html`** file (in the `<head
     <script src="_framework/blazor.webassembly.js"></script>
     <!-- Required: Sortable.js library -->
     <script src="sortablejs1.15.7/Sortable.min.js"></script>
-    <!-- Required: SortableBlazorHybrid interop script -->
-    <script src="./_content/SortableBlazorHybrid/sortable-interop.js"></script>
 </body>
 </html>
 ```
