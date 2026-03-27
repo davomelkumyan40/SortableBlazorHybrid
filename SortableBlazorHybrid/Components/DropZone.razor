@@ -1,0 +1,36 @@
+﻿@namespace SortableBlazorHybrid
+
+@typeparam T where T : class
+
+<div class="@Class" style="@Style" id="@Identifier" data-zone="@Identifier">
+    @foreach (var item in Container.GetItems(Identifier))
+    {
+        <div class="@(Container.ItemDisabled != null && Container.ItemDisabled(item) ? Container.DisabledItemClass : "")">
+             @Container.ItemRenderer(item)
+        </div>
+    }
+</div>
+
+@code {
+
+    [CascadingParameter]
+    internal DropContainer<T> Container { get; set; } = default!;
+
+    [Parameter]
+    public string Identifier { get; set; } = $"id-{new object().GetHashCode()}";
+
+    [Parameter]
+    public string Class { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Style { get; set; } = string.Empty;
+
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        Container.RegisterDropZone(Identifier);
+    }
+}

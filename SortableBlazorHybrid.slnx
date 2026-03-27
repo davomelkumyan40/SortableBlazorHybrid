@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="SortableBlazorHybrid.Sample/SortableBlazorHybrid.Sample.csproj" Id="6dd82518-5e2e-45e0-b8b9-d0a94f0820f6">
+    <Deploy Solution="Debug|*" />
+  </Project>
+  <Project Path="SortableBlazorHybrid.SampleWasm/SortableBlazorHybrid.SampleWasm.csproj" Id="751b5521-f784-474c-8fa9-4b889be0ee69" />
+  <Project Path="SortableBlazorHybrid/SortableBlazorHybrid.csproj" />
+</Solution>

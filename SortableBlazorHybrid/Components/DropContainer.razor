@@ -1,0 +1,195 @@
+﻿@namespace SortableBlazorHybrid
+@using Microsoft.JSInterop
+@using System.Text.Json.Serialization
+
+@implements IAsyncDisposable
+@typeparam T where T : class
+
+<CascadingValue Value="this">
+    <div class="@($"drop-container {Class}")" style="@Style">
+        @ChildContent
+    </div>
+</CascadingValue>
+
+@code {
+
+    [Parameter, EditorRequired]
+    public List<T> Items { get; set; }
+
+    [Parameter, EditorRequired]
+    public Func<T, string, bool> ItemsSelector { get; set; } = default!;
+
+    [Parameter]
+    public Func<T, bool>? ItemDisabled { get; set; }
+
+    [Parameter]
+    public string DisabledItemClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; } = default!;
+
+    [Parameter]
+    public RenderFragment<T> ItemRenderer { get; set; } = default!;
+
+    [Parameter]
+    public string Class { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Style { get; set; } = string.Empty;
+
+
+    [Parameter]
+    public int Transition { get; set; } = 150;
+
+    // Use pointer events, NOT html5 drag API
+    [Parameter]
+    public bool ForceFallback { get; set; } = true;
+
+    [Parameter]
+    public bool DelayOnTouchOnly { get; set; } = false;
+
+    [Parameter]
+    public int DelayOnTouch { get; set; } = 150;
+
+    [Parameter]
+    public float SwapThreshold { get; set; } = 1.0f;
+
+    [Parameter]
+    public string DragHandleClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public string GhostClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public string ChosenClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public string DragClass { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Group { get; set; } = "shared";
+
+    [Parameter]
+    public bool AllowReorder { get; set; }
+
+    [Parameter]
+    public bool FallbackOnBody { get; set; }
+
+
+    #region Events
+
+
+    [Parameter]
+    public EventCallback<OnItemDropEventArgs> OnItemDrop { get; set; }
+
+    [Parameter]
+    public EventCallback<OnItemMoveEventArgs> OnItemMove { get; set; }
+
+    [Parameter]
+    public EventCallback<OnDragEventArgs> OnItemDrag { get; set; }
+
+
+
+
+    [JSInvokable]
+    public Task OnDrop(OnItemDropEventArgs eventArgs)
+    {
+        if (AllowReorder && eventArgs.OldIndex != eventArgs.NewIndex)
+        {
+            var item = Items[eventArgs.OldIndex];
+            Items.RemoveAt(eventArgs.OldIndex);
+            Items.Insert(eventArgs.NewIndex, item);
+        }
+        return OnItemDrop.InvokeAsync(eventArgs);
+    }
+
+    [JSInvokable]
+    public Task OnDrag(OnDragEventArgs eventArgs) => OnItemDrag.InvokeAsync(eventArgs);
+
+    [JSInvokable]
+    public Task OnMove(OnItemMoveEventArgs eventArgs) => OnItemMove.InvokeAsync(eventArgs);
+
+    #endregion
+
+
+
+    [Inject]
+    internal IJSRuntime JS { get; set; } = default!;
+
+
+    private List<string> _zoneIds = new();
+    private DotNetObjectReference<DropContainer<T>>? _dotNetRef;
+    private Lazy<Task<IJSObjectReference>> _moduleTask = default!;
+
+
+    protected override void OnInitialized()
+    {
+        _moduleTask = new Lazy<Task<IJSObjectReference>>(() =>
+            JS.InvokeAsync<IJSObjectReference>(
+                "import", "./_content/SortableBlazorHybrid/sortable-interop.js"
+            ).AsTask()
+        );
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!firstRender)
+            return;
+
+        _dotNetRef = DotNetObjectReference.Create(this);
+
+        var options = new
+        {
+            animation = Transition,
+            forceFallback = ForceFallback,
+            delayOnTouchOnly = DelayOnTouchOnly,
+            delay = DelayOnTouch,
+            swapThreshold = SwapThreshold,
+            handle = string.IsNullOrEmpty(DragHandleClass) ? null : $".{DragHandleClass}",
+            ghostClass = GhostClass,
+            chosenClass = ChosenClass,
+            dragClass = DragClass,
+            group = Group,
+            fallbackOnBody = FallbackOnBody,
+            filter = string.IsNullOrEmpty(DisabledItemClass) ? null : $".{DisabledItemClass}",
+        };
+
+        var module = await _moduleTask.Value;
+
+        // Wait longer to ensure ALL nested components have initialized
+        foreach (var zoneId in _zoneIds)
+        {
+            await module.InvokeVoidAsync(
+                "initSortable",
+                zoneId,
+                options,
+                _dotNetRef
+            );
+        }
+    }
+
+
+    internal void RegisterDropZone(string zoneIdentifier)
+    {
+        if (!_zoneIds.Contains(zoneIdentifier))
+        {
+            System.Diagnostics.Debug.WriteLine($"[DropContainer] Registered zone: {zoneIdentifier}");
+            _zoneIds.Add(zoneIdentifier);
+        }
+    }
+
+    internal IEnumerable<T> GetItems(string identifier) => Items?.Where(x => ItemsSelector(x, identifier)) ?? Enumerable.Empty<T>();
+
+    public async ValueTask DisposeAsync()
+    {
+        var module = await _moduleTask.Value;
+        if (!_moduleTask.IsValueCreated || module is null)
+            return;
+
+
+        await Task.WhenAll(_zoneIds.Select(async x => await module.InvokeVoidAsync("destroy", x)));
+        await module.DisposeAsync();
+        _dotNetRef?.Dispose();
+    }
+}
+

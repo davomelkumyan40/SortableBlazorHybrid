@@ -1,0 +1,287 @@
+﻿@page "/"
+@using SortableBlazorHybrid;
+
+<h3>Single list drag drop</h3>
+<ul class="list-group">
+    <DropContainer T="DragDropItem" 
+                   Items="Items" 
+                   Transition="150" 
+                   GhostClass="pi-sortable-ghost" 
+                   ChosenClass="pi-sortable-chosen" 
+                   DragClass="pi-sortable-drag"
+                   DragHandleClass="pi-drag-indicator"
+                   DelayOnTouchOnly="true"
+                   ItemsSelector="@((item, zoneId) => true)">
+        <ChildContent>
+            <DropZone T="DragDropItem" Class="rounded background-gray px-4 py-1 ma-4"/>
+        </ChildContent>
+        <ItemRenderer>
+            <li class="list-group-item pi-drag-indicator">@context.Name</li>
+        </ItemRenderer>
+    </DropContainer>
+</ul>
+
+
+
+<h3>Multiple Zone Drag Drop</h3>
+<ul class="list-group">
+    <DropContainer T="DragDropItem" 
+                   Items="Items" 
+                   Class="d-flex"
+                   Transition="150" 
+                   GhostClass="pi-sortable-ghost" 
+                   ChosenClass="pi-sortable-chosen" 
+                   DragClass="pi-sortable-drag"
+                   DragHandleClass="pi-drag-indicator"
+                   DelayOnTouchOnly="true"
+                   ItemsSelector="@((item, zoneId) => true)">
+        <ChildContent>
+            <DropZone T="DragDropItem" Class="flex-1 rounded background-gray px-4 py-1 ma-4"/>
+            <DropZone T="DragDropItem" Class="flex-1 rounded background-gray px-4 py-1 ma-4"/>
+            <DropZone T="DragDropItem" Class="flex-1 rounded background-gray px-4 py-1 ma-4"/>
+        </ChildContent>
+        <ItemRenderer>
+            <li class="list-group-item pi-drag-indicator">@context.Name</li>
+        </ItemRenderer>
+    </DropContainer>
+</ul>
+
+
+
+<h3>Nested Zone Drag Drop</h3>
+<ul class="list-group">
+    <DropContainer T="DragDropItem"
+                   Items="Items"
+                   Transition="150"
+                   SwapThreshold="0.65f"
+                   Group="nested"
+                   GhostClass="pi-sortable-ghost"
+                   ChosenClass="pi-sortable-chosen"
+                   DragClass="pi-sortable-drag"
+                   DragHandleClass="pi-drag-indicator"
+                   DelayOnTouchOnly="true"
+                   ItemsSelector="@((item, zoneId) => item.ZoneId == zoneId)">
+        <ChildContent>
+            <DropContainer T="DragDropZone"
+                           Items="Zones"
+                           Group="nested"
+                           Transition="150"
+                           SwapThreshold="0.65f"
+                           GhostClass="pi-sortable-ghost"
+                           ChosenClass="pi-sortable-chosen"
+                           DragClass="pi-sortable-drag"
+                           DragHandleClass="pi-drag-indicator"
+                           ItemsSelector="@((item, zoneId) => true)"
+                           DelayOnTouchOnly="true">
+                <ChildContent>
+                    <DropZone T="DragDropZone" Class="rounded background-gray px-4 py-1 ma-4" />
+                </ChildContent>
+                <ItemRenderer>
+                    <div Class="container pa-4 my-4">
+                        <p class="lead">@context.Name</p>
+                        <DropZone T="DragDropItem" Identifier="@context.Id" Class="rounded background-gray px-4 py-1 ma-4" />
+                    </div>
+                </ItemRenderer>
+            </DropContainer>
+        </ChildContent>
+        <ItemRenderer>
+            <li class="list-group-item pi-drag-indicator">@context.Name</li>
+        </ItemRenderer>
+    </DropContainer>
+</ul>
+
+
+<h3>Disabled Drag Drop</h3>
+<ul class="list-group">
+    <DropContainer T="DragDropItem" 
+                   Items="Items" 
+                   Transition="150" 
+                   Group="group-disabled"
+                   GhostClass="pi-sortable-ghost" 
+                   ChosenClass="pi-sortable-chosen" 
+                   DragClass="pi-sortable-drag"
+                   DragHandleClass="pi-drag-indicator"
+                   DelayOnTouchOnly="true"
+                   ItemsSelector="@((item, zoneId) => true)"
+                   ItemDisabled="@(item => int.Parse(item.Name[^1].ToString()) % 2 == 0)"
+                   DisabledItemClass="pi-sortable-disabled">
+        <ChildContent>
+            <DropZone T="DragDropItem" Class="rounded background-gray px-4 py-1 ma-4"/>
+        </ChildContent>
+        <ItemRenderer>
+            <li class="list-group-item bg-transparent pi-drag-indicator">@context.Name</li>
+        </ItemRenderer>
+    </DropContainer>
+</ul>
+
+
+<h3>Indicator only Drag Drop</h3>
+<ul class="list-group">
+    <DropContainer T="DragDropItem" 
+                   Items="Items" 
+                   Transition="150" 
+                   Group="group-disabled"
+                   GhostClass="pi-sortable-ghost" 
+                   ChosenClass="pi-sortable-chosen" 
+                   DragClass="pi-sortable-drag"
+                   DragHandleClass="pi-drag-indicator"
+                   DelayOnTouchOnly="true"
+                   ItemsSelector="@((item, zoneId) => true)">
+        <ChildContent>
+            <DropZone T="DragDropItem" Class="rounded background-gray px-4 py-1 ma-4"/>
+        </ChildContent>
+        <ItemRenderer>
+            <li class="list-group-item">
+                <span class="badge bg-primary pi-drag-indicator">DRAG</span>
+                @context.Name
+            </li>
+        </ItemRenderer>
+    </DropContainer>
+</ul>
+
+
+
+
+<h3>Events Drag Drop</h3>
+<ul class="list-group">
+    <DropContainer T="DragDropItem" 
+                   Items="Items" 
+                   Transition="150" 
+                   Group="group-disabled"
+                   GhostClass="pi-sortable-ghost" 
+                   ChosenClass="pi-sortable-chosen" 
+                   DragClass="pi-sortable-drag"
+                   DragHandleClass="pi-drag-indicator"
+                   DelayOnTouchOnly="true"
+                   ItemDisabled="@(item => int.Parse(item.Name[^1].ToString()) % 2 == 0)"
+                   DisabledItemClass="pi-sortable-disabled"
+                   ItemsSelector="@((item, zoneId) => true)"
+                   OnItemDrag="@((e) => OnItemDragText = $"OnItemDrag OldIndex: {e.OldIndex}, IsDisabled: {e.IsDisabled}")"
+                   OnItemDrop="@((e) => OnItemDropText = $"OnItemDrop NewIndex: {e.NewIndex} OldIndex: {e.OldIndex} FromZoneId: {e.FromZoneId} ToZoneId: {e.ToZoneId}")"
+                   OnItemMove="@((e) => OnItemMoveText = $"OnItemMove ClientY: {e.ClientY} DraggedRect: {System.Text.Json.JsonSerializer.Serialize(e.DraggedRect)} RelatedRect: {System.Text.Json.JsonSerializer.Serialize(e.RelatedRect)}")">
+        <ChildContent>
+            <DropZone T="DragDropItem" Class="rounded background-gray px-4 py-1 ma-4"/>
+        </ChildContent>
+        <ItemRenderer>
+            <li class="list-group-item bg-transparent">
+                <span class="badge bg-primary pi-drag-indicator">DRAG</span>
+                @context.Name
+            </li>
+        </ItemRenderer>
+    </DropContainer>
+</ul>
+
+
+
+<h3>Events Output</h3>
+<div class="p-3 mb-2 bg-primary text-white">@OnItemDragText</div>
+<div class="p-3 mb-2 bg-primary text-white">@OnItemDropText</div>
+<div class="p-3 mb-2 bg-primary text-white">@OnItemMoveText</div>
+
+
+
+
+<h3>AllowReorder Drag Drop</h3>
+<ul class="list-group">
+    <DropContainer T="DragDropItem"
+                   Items="Items"
+                   Transition="150"
+                   Group="group-disabled"
+                   GhostClass="pi-sortable-ghost"
+                   ChosenClass="pi-sortable-chosen"
+                   DragClass="pi-sortable-drag"
+                   DragHandleClass="pi-drag-indicator"
+                   DelayOnTouchOnly="true"
+                   ItemDisabled="@(item => false)"
+                   DisabledItemClass="pi-sortable-disabled"
+                   ItemsSelector="@((item, zoneId) => true)"
+                   OnItemDrop="@(e => StateHasChanged())"
+                   AllowReorder="true">
+        <ChildContent>
+            <DropZone T="DragDropItem" Class="rounded background-gray px-4 py-1 ma-4" />
+        </ChildContent>
+        <ItemRenderer>
+            <li class="list-group-item bg-transparent">
+                <span class="badge bg-primary pi-drag-indicator">DRAG</span>
+                @context.Name
+            </li>
+        </ItemRenderer>
+    </DropContainer>
+</ul> 
+
+
+<h3>Original List Items</h3>
+<ul class="list-group">
+    @foreach (var item in Items)
+    {
+        <a href="#" class="list-group-item list-group-item-action">@item.Name</a>
+    }
+</ul>
+
+<style>
+    .pi-sortable-disabled {
+        background-color: rgba(1, 1, 1, 0.4) !important;
+    }
+
+    .pi-drag-indicator {
+        cursor: grab;
+    }
+
+    .background-gray {
+        background-color: #ccc;
+    }
+
+
+    /* SortableJS visual feedback */
+    .pi-sortable-ghost {
+        opacity: 0.4;
+    }
+
+    .pi-sortable-chosen {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+
+    .pi-sortable-drag {
+        opacity: 0;
+    }
+</style>
+
+
+
+@code {
+    public string OnItemDragText { get; set; } = string.Empty;
+    public string OnItemDropText { get; set; } = string.Empty;
+    public string OnItemMoveText { get; set; } = string.Empty;
+
+    private List<DragDropZone> Zones = new()
+    {
+        new() { Id = "zone-1", Name = "Zone 1" },
+        new() { Id = "zone-2", Name = "Zone 2" },
+    };
+
+    private List<DragDropItem> Items = new()
+    {
+        new() { Id = "item-1", Name = "Item 1", ZoneId = "zone-1" },
+        new() { Id = "item-2", Name = "Item 2", ZoneId = "zone-1" },
+        new() { Id = "item-3", Name = "Item 3", ZoneId = "zone-2" },
+        new() { Id = "item-4", Name = "Item 4", ZoneId = "zone-2" },
+        new() { Id = "item-5", Name = "Item 5", ZoneId = "zone-1" },
+        new() { Id = "item-6", Name = "Item 6", ZoneId = "zone-1" },
+    };
+
+    public class DragDropItem
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string ZoneId { get; set; } = string.Empty;
+    }
+
+
+    public class DragDropZone
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+    }
+
+
+}
