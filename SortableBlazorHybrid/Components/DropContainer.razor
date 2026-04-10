@@ -98,7 +98,11 @@
         {
             var item = Items[eventArgs.OldIndex];
             Items.RemoveAt(eventArgs.OldIndex);
-            Items.Insert(eventArgs.NewIndex, item);
+
+            if (eventArgs.NewIndex < Items.Count)
+                Items.Insert(eventArgs.NewIndex, item);
+            else
+                Items.Add(item);
         }
         return OnItemDrop.InvokeAsync(eventArgs);
     }
@@ -173,7 +177,6 @@
     {
         if (!_zoneIds.Contains(zoneIdentifier))
         {
-            System.Diagnostics.Debug.WriteLine($"[DropContainer] Registered zone: {zoneIdentifier}");
             _zoneIds.Add(zoneIdentifier);
         }
     }

@@ -10,7 +10,7 @@
 
   <PropertyGroup>
     <PackageId>SortableBlazorHybrid</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>David Melkumyan</Authors>
     <Description>A powerful drag-and-drop sorting component library for Blazor Hybrid (MAUI) and Blazor WebAssembly applications. Built on Sortable.js with support for multi-zone dragging, nested containers, touch events, and extensive customization options.</Description>
     <Summary>Drag-and-drop sorting for Blazor Hybrid and WASM applications</Summary>

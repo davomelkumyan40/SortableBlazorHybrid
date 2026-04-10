@@ -5,7 +5,7 @@
 <div class="@Class" style="@Style" id="@Identifier" data-zone="@Identifier">
     @foreach (var item in Container.GetItems(Identifier))
     {
-        <div class="@(Container.ItemDisabled != null && Container.ItemDisabled(item) ? Container.DisabledItemClass : "")">
+        <div @key="item" class="@(Container.ItemDisabled != null && Container.ItemDisabled(item) ? Container.DisabledItemClass : "")">
              @Container.ItemRenderer(item)
         </div>
     }

@@ -56,7 +56,6 @@ export async function initSortable(zoneId, options, dotNetRef) {
         delayOnTouchOnly,    // Apply delay only on touch, not mouse
 
         onStart: function (/**Event*/evt) {
-            console.log(`[Sortable] onStart - zone: ${zoneId}, oldIndex: ${evt.oldIndex}`);
             if (!dotNetRef) return;
 
             dotNetRef.invokeMethodAsync('OnDrag', {
@@ -67,7 +66,6 @@ export async function initSortable(zoneId, options, dotNetRef) {
 
         // Attempt to drag a filtered element
         onFilter: function (/**Event*/evt) {
-            console.log(`[Sortable] onFilter - zone: ${zoneId}, oldIndex: ${evt.oldIndex}`);
             if (!dotNetRef) return;
 
             dotNetRef.invokeMethodAsync('OnDrag', {
@@ -98,10 +96,14 @@ export async function initSortable(zoneId, options, dotNetRef) {
             });
         },
 
-        onEnd: function (evt) {
-            console.log(`[Sortable] onEnd - zone: ${zoneId}, from: ${evt.from.id}, to: ${evt.to.id}, oldIndex: ${evt.oldIndex}, newIndex: ${evt.newIndex}`);
-            if (!dotNetRef) return;
+        onUpdate: (event) => {
+            // Revert the DOM to match the .NET state
+            event.item.remove();
+            event.to.insertBefore(event.item, event.to.childNodes[event.oldIndex]);
+        },
 
+        onEnd: function (evt) {
+            if (!dotNetRef) return;
             dotNetRef.invokeMethodAsync('OnDrop', {
                 fromZoneId: evt.from.id,
                 toZoneId: evt.to.id,
@@ -110,7 +112,6 @@ export async function initSortable(zoneId, options, dotNetRef) {
             });
         }
     });
-    console.log(`[Sortable] Successfully initialized zone: ${zoneId}`);
 };
 
 export function destroy(zoneId) {
